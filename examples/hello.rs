@@ -18,7 +18,7 @@ const G_ERROR: libc::intptr_t = 1;
 const GAME_INIT: libc::c_int = 0;
 const GAME_SHUTDOWN: libc::c_int = 1;
 
-impl QVM for HelloQuake3 {
+impl NativeVM for HelloQuake3 {
    fn dll_entry(syscall: Syscall) -> Box<HelloQuake3> {
        Box::new(HelloQuake3 { syscall: syscall })
    }
@@ -52,4 +52,4 @@ impl QVM for HelloQuake3 {
    }
 }
 
-native_qvm!(HelloQuake3);
+native_vm!(HelloQuake3);
