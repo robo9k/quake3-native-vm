@@ -11,8 +11,8 @@
 
 //#![feature(use_extern_macros)]
 
-pub extern crate libc;
 pub extern crate lazy_static;
+pub extern crate libc;
 
 // https://github.com/rust-lang/rust/issues/29638#issuecomment-298517765
 pub use lazy_static::*;
@@ -33,26 +33,29 @@ pub trait NativeVM: 'static + Sync + Send {
     /// Initialization function.
     ///
     /// `syscall` is a callback into the engine.
-    fn dll_entry(syscall: Syscall) -> Box<Self> where Self: Sized;
+    fn dll_entry(syscall: Syscall) -> Box<Self>
+    where
+        Self: Sized;
 
     /// VM dispatcher function.
     ///
     /// Engine calls this for game logic, e.g. `GAME_INIT`.
-    fn vm_main(&self,
-               command: libc::c_int,
-               arg0: libc::c_int,
-               arg1: libc::c_int,
-               arg2: libc::c_int,
-               arg3: libc::c_int,
-               arg4: libc::c_int,
-               arg5: libc::c_int,
-               arg6: libc::c_int,
-               arg7: libc::c_int,
-               arg8: libc::c_int,
-               arg9: libc::c_int,
-               arg10: libc::c_int,
-               arg11: libc::c_int)
-               -> libc::intptr_t;
+    fn vm_main(
+        &self,
+        command: libc::c_int,
+        arg0: libc::c_int,
+        arg1: libc::c_int,
+        arg2: libc::c_int,
+        arg3: libc::c_int,
+        arg4: libc::c_int,
+        arg5: libc::c_int,
+        arg6: libc::c_int,
+        arg7: libc::c_int,
+        arg8: libc::c_int,
+        arg9: libc::c_int,
+        arg10: libc::c_int,
+        arg11: libc::c_int,
+    ) -> libc::intptr_t;
 }
 
 /// Create required `extern "C" fn`s to load a [`impl NativeVM`](NativeVM) as shared library
@@ -143,8 +146,10 @@ pub trait NativeVM: 'static + Sync + Send {
 #[macro_export]
 macro_rules! native_vm {
     ($ty:ident) => {
+        use std::sync::{Arc, RwLock};
+
         $crate::lazy_static! {
-            static ref _VM_IMPL: std::sync::Arc<std::sync::RwLock<Option<Box<NativeVM>>>> = std::sync::Arc::new(std::sync::RwLock::new(None));
+            static ref _VM_IMPL: Arc<RwLock<Option<Box<NativeVM>>>> = Arc::new(RwLock::new(None));
         }
 
         #[doc(hidden)]
