@@ -22,7 +22,7 @@ pub use lazy_static::*;
 /// For communication from VM to the engine's syscall handler for this module, e.g. `qagame` → `SV_GameSystemCalls`.
 ///
 /// NOTE: The function is not really variadic, the actual number of arguments is an implementation detail.
-/// See `VM_DllSyscall` in ioquake3's [qcommon/vm.c](https://github.com/ioquake/ioq3/blob/master/code/qcommon/vm.c).
+/// See `VM_DllSyscall` in [ioquake3's `qcommon/vm.c`](https://github.com/ioquake/ioq3/blob/master/code/qcommon/vm.c).
 pub type Syscall = extern "C" fn(arg: libc::intptr_t, ...) -> libc::intptr_t;
 
 /// Raw FFI interface for shared library VMs
@@ -91,7 +91,7 @@ pub trait NativeVM: 'static + Sync + Send {
 /// }
 ///
 ///
-/// /// See ioquake3's [game/g_public.h](https://github.com/ioquake/ioq3/blob/master/code/game/g_public.h)
+/// /// See [ioquake3's `game/g_public.h`](https://github.com/ioquake/ioq3/blob/master/code/game/g_public.h)
 /// const G_ERROR: libc::intptr_t = 1;
 /// const GAME_INIT: libc::c_int = 0;
 /// const GAME_SHUTDOWN: libc::c_int = 1;
@@ -118,7 +118,8 @@ pub trait NativeVM: 'static + Sync + Send {
 ///               -> libc::intptr_t {
 ///        match command {
 ///            GAME_INIT => {
-///                (self.syscall)(G_ERROR, CString::new("Hello, World!").unwrap().as_ptr());
+///                let msg = CString::new("Hello, World!").unwrap();
+///                (self.syscall)(G_ERROR, msg.as_ptr());
 ///                unreachable!()
 ///            }
 ///            GAME_SHUTDOWN => {

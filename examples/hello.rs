@@ -13,7 +13,7 @@ struct HelloQuake3 {
 
 use quake3_native_vm::*;
 
-/// See ioquake3's [game/g_public.h](https://github.com/ioquake/ioq3/blob/master/code/game/g_public.h)
+/// See [ioquake3's `game/g_public.h`](https://github.com/ioquake/ioq3/blob/master/code/game/g_public.h)
 const G_ERROR: libc::intptr_t = 1;
 const GAME_INIT: libc::c_int = 0;
 const GAME_SHUTDOWN: libc::c_int = 1;
@@ -41,7 +41,8 @@ impl NativeVM for HelloQuake3 {
     ) -> libc::intptr_t {
         match command {
             GAME_INIT => {
-                (self.syscall)(G_ERROR, CString::new("Hello, World!").unwrap().as_ptr());
+                let msg = CString::new("Hello, World!").unwrap();
+                (self.syscall)(G_ERROR, msg.as_ptr());
                 unreachable!()
             }
             GAME_SHUTDOWN => {
