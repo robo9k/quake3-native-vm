@@ -1,6 +1,12 @@
 //! QVM as native shared library.
 
-extern crate libc;
+//#![feature(use_extern_macros)]
+
+pub extern crate libc;
+pub extern crate lazy_static;
+
+// https://github.com/rust-lang/rust/issues/29638#issuecomment-298517765
+pub use lazy_static::*;
 
 /// Engine's syscall function type.
 ///
@@ -53,21 +59,19 @@ pub trait QVM: 'static + Sync + Send {
 /// Then implement a QVM by using the macro as such:
 ///
 /// ```rust
+/// // Needed for re-exported lazy_static! macro
+/// #![feature(use_extern_macros)]
+///
 /// #[macro_use]
 /// extern crate quake3_native_vm;
-/// // Needed for C FFI
-/// extern crate libc;
-/// // Needed to initialize internal `static mut` until const-fns are stable
-/// #[macro_use]
-/// extern crate lazy_static;
 ///
 /// use std::ffi::CString;
+/// use quake3_native_vm::*;
 ///
 /// struct HelloQuake3 {
 ///    syscall: Syscall,
 /// }
 ///
-/// use quake3_native_vm::*;
 ///
 /// /// See ioquake3's [game/g_public.h](https://github.com/ioquake/ioq3/blob/master/code/game/g_public.h)
 /// const G_ERROR: libc::intptr_t = 1;
@@ -124,7 +128,7 @@ pub trait QVM: 'static + Sync + Send {
 #[macro_export]
 macro_rules! native_qvm {
     ($ty:ident) => {
-        lazy_static! {
+        $crate::lazy_static! {
             static ref _QVM_IMPL: std::sync::Arc<std::sync::RwLock<Option<Box<QVM>>>> = std::sync::Arc::new(std::sync::RwLock::new(None));
         }
 
@@ -139,20 +143,20 @@ macro_rules! native_qvm {
         #[doc(hidden)]
         #[no_mangle]
         #[allow(non_snake_case)]
-        pub extern "C" fn vmMain(command: libc::c_int,
-                                 arg0: libc::c_int,
-                                 arg1: libc::c_int,
-                                 arg2: libc::c_int,
-                                 arg3: libc::c_int,
-                                 arg4: libc::c_int,
-                                 arg5: libc::c_int,
-                                 arg6: libc::c_int,
-                                 arg7: libc::c_int,
-                                 arg8: libc::c_int,
-                                 arg9: libc::c_int,
-                                 arg10: libc::c_int,
-                                 arg11: libc::c_int)
-                                 -> libc::intptr_t {
+        pub extern "C" fn vmMain(command: $crate::libc::c_int,
+                                 arg0: $crate::libc::c_int,
+                                 arg1: $crate::libc::c_int,
+                                 arg2: $crate::libc::c_int,
+                                 arg3: $crate::libc::c_int,
+                                 arg4: $crate::libc::c_int,
+                                 arg5: $crate::libc::c_int,
+                                 arg6: $crate::libc::c_int,
+                                 arg7: $crate::libc::c_int,
+                                 arg8: $crate::libc::c_int,
+                                 arg9: $crate::libc::c_int,
+                                 arg10: $crate::libc::c_int,
+                                 arg11: $crate::libc::c_int)
+                                 -> $crate::libc::intptr_t {
             let data = _QVM_IMPL.read().unwrap();
             data.as_ref().unwrap().vm_main(command,
                                arg0,

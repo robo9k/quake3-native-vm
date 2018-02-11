@@ -1,12 +1,11 @@
+// Needed for re-exported lazy_static! macro
+#![feature(use_extern_macros)]
+
 #[macro_use]
 extern crate quake3_native_vm;
-// Needed for C FFI
-extern crate libc;
-// Needed to initialize internal `static mut` until const-fns are stable
-#[macro_use]
-extern crate lazy_static;
 
 use std::ffi::CString;
+use quake3_native_vm::libc;
 
 struct HelloQuake3 {
    syscall: Syscall,
