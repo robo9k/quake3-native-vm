@@ -1,4 +1,10 @@
-//! QVM as native shared library.
+//! Native Rust VMs for Quake 3
+//!
+//! The [id Tech 3 engine](https://en.wikipedia.org/wiki/Id_Tech_3)
+//! can load its game modules (`qagame`, `cgame` and `ui`) both as
+//! QVM (Quake Virtual Machine, see [`quake3-qvm` crate](https://crates.io/crates/quake3-qvm)) files and
+//! as shared libraries.
+//! This crate enables you to write such a native module with Rust code.
 
 //#![feature(use_extern_macros)]
 
@@ -10,10 +16,10 @@ pub use lazy_static::*;
 
 /// Engine's syscall function type.
 ///
-/// For communication from QVM to the engine's syscall handler for this QVM.
+/// For communication from VM to the engine's syscall handler for this module, e.g. `qagame` → `SV_GameSystemCalls`.
 ///
-/// NOTE: The function is not really variadic, the actual number of arguments is an implementation
-/// detail. See `MAX_VMSYSCALL_ARGS` in ioquake3's [qcommon/vm_local.h](https://github.com/ioquake/ioq3/blob/master/code/qcommon/vm_local.h).
+/// NOTE: The function is not really variadic, the actual number of arguments is an implementation detail.
+/// See `VM_DllSyscall` in ioquake3's [qcommon/vm.c](https://github.com/ioquake/ioq3/blob/master/code/qcommon/vm.c).
 pub type Syscall = extern "C" fn(arg: libc::intptr_t, ...) -> libc::intptr_t;
 
 /// Interface for native QVM implementations.
