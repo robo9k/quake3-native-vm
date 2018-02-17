@@ -1,12 +1,10 @@
-//! Native Rust VMs for Quake 3
+//! Native Rust libs as Quake 3 modules
 //!
 //! The [id Tech 3 engine](https://en.wikipedia.org/wiki/Id_Tech_3)
 //! can load its game modules (`qagame`, `cgame` and `ui`) both as
 //! QVM (Quake Virtual Machine, see [`quake3-qvm` crate](https://crates.io/crates/quake3-qvm)) files and
 //! as shared libraries.
-//! This crate enables you to write such a native module with Rust code. For those, (Q)VM is
-//! a misnomer, since they are not interpreted/compiled with the engine's machinery.
-//!
+//! This crate enables you to write such a native module with Rust code.
 //! Take a look at [`native_vm!`](native_vm) to get started.
 
 extern crate lazy_static;
@@ -22,27 +20,27 @@ pub mod ffi {
 
 /// Engine's syscall function type
 ///
-/// For communication from VM to the engine's syscall handler for this module, e.g. `qagame` → `SV_GameSystemCalls`.
+/// For communication from module to the engine's syscall handler for this module, e.g. `qagame` → `SV_GameSystemCalls`.
 ///
 /// NOTE: The function is not really variadic, the actual number of arguments is an implementation detail.
 /// See `VM_DllSyscall` in [ioquake3's `qcommon/vm.c`](https://github.com/ioquake/ioq3/blob/master/code/qcommon/vm.c).
 pub type Syscall = extern "C" fn(arg: ffi::intptr_t, ...) -> ffi::intptr_t;
 
-/// Raw FFI interface for shared library VMs
+/// Raw FFI interface for shared library modules
 ///
 /// To use an implementation of this, it needs to be wrapped into a shared library with [`native_vm!`](native_vm).
 // TODO: Find a better name. It's no VM, just a "module"
 pub trait NativeVM: 'static + Sync + Send {
-    /// Initialization function.
+    /// Initialization function
     ///
-    /// `syscall` is a generic callback into the engine.
+    /// `syscall` is a generic callback into the engine for this module.
     ///
     /// See `Sys_LoadGameDll` in [ioquake3's `sys/sys_main.c`](https://github.com/ioquake/ioq3/blob/master/code/sys/sys_main.c).
     fn dll_entry(syscall: Syscall) -> Box<Self>
     where
         Self: Sized;
 
-    /// VM dispatcher function.
+    /// Module dispatcher function
     ///
     /// Engine calls this for module logic, e.g. `GAME_INIT`.
     ///
