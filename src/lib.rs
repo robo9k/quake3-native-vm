@@ -18,6 +18,8 @@ pub mod ffi {
     pub use libc::c_int;
 }
 
+pub mod qagame;
+
 /// Engine's syscall function type
 ///
 /// For communication from module to the engine's syscall handler for this module, e.g. `qagame` → `SV_GameSystemCalls`.
