@@ -12,7 +12,7 @@ extern crate libc;
 
 #[macro_use]
 extern crate enum_primitive_derive;
-extern crate num_traits;
+pub extern crate num_traits;
 
 // https://github.com/rust-lang/rust/issues/29638#issuecomment-298517765
 pub use lazy_static::*;
@@ -164,13 +164,13 @@ macro_rules! native_vm {
         use std::sync::{Arc, RwLock};
 
         $crate::lazy_static! {
-            static ref _VM_IMPL: Arc<RwLock<Option<Box<NativeVM>>>> = Arc::new(RwLock::new(None));
+            static ref _VM_IMPL: Arc<RwLock<Option<Box<$crate::NativeVM>>>> = Arc::new(RwLock::new(None));
         }
 
         #[doc(hidden)]
         #[no_mangle]
         #[allow(non_snake_case)]
-        pub extern "C" fn dllEntry(syscall: Syscall) {
+        pub extern "C" fn dllEntry(syscall: $crate::Syscall) {
             let mut VM_IMPL = _VM_IMPL.write().unwrap();
             *VM_IMPL = Some($ty::dll_entry(syscall));
         }
