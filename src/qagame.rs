@@ -16,9 +16,10 @@
 #[repr(C)]
 // TODO: Should these be shortened and renamed, e.g. `Print` and `Error` instead of `G_PRINT` and `G_ERROR`?
 #[allow(non_camel_case_types)]
+#[derive(Primitive)]
 pub enum Imports {
-    G_PRINT,
-    G_ERROR,
+    G_PRINT = 0,
+    G_ERROR = 1,
 }
 
 /// Functions exported by the module
@@ -27,7 +28,8 @@ pub enum Imports {
 #[repr(C)]
 // TODO: Should these be shortened and renamed, e.g. `Init` and `Shutdown` instead of `GAME_INIT` and `GAME_SHUTDOWN`?
 #[allow(non_camel_case_types)]
+#[derive(Primitive)]
 pub enum Exports {
-    GAME_INIT,
-    GAME_SHUTDOWN,
+    GAME_INIT = 0,
+    GAME_SHUTDOWN = 1,
 }

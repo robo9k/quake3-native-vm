@@ -4,6 +4,8 @@
 #[macro_use]
 extern crate quake3_native_vm;
 
+extern crate num_traits;
+
 use std::ffi::CString;
 use quake3_native_vm::ffi;
 
@@ -12,11 +14,8 @@ struct HelloQuake3 {
 }
 
 use quake3_native_vm::*;
-
-/// See [ioquake3's `game/g_public.h`](https://github.com/ioquake/ioq3/blob/master/code/game/g_public.h)
-const G_ERROR: ffi::intptr_t = 1;
-const GAME_INIT: ffi::c_int = 0;
-const GAME_SHUTDOWN: ffi::c_int = 1;
+use quake3_native_vm::qagame::{Exports, Imports};
+use num_traits::{FromPrimitive, ToPrimitive};
 
 impl NativeVM for HelloQuake3 {
     fn dll_entry(syscall: Syscall) -> Box<HelloQuake3> {
@@ -39,13 +38,16 @@ impl NativeVM for HelloQuake3 {
         _arg10: ffi::c_int,
         _arg11: ffi::c_int,
     ) -> ffi::intptr_t {
-        match command {
-            GAME_INIT => {
+        // FIXME: This is not exactly pretty..
+        // What I need is "Exports::* from ffi::c_int" and "Imports::* to ffi::intptr_t"
+        // and then easy matching and no .unwrap()
+        match Exports::from_i32(command) {
+            Some(Exports::GAME_INIT) => {
                 let msg = CString::new("Hello, World!").unwrap();
-                (self.syscall)(G_ERROR, msg.as_ptr());
+                (self.syscall)(Imports::G_ERROR.to_isize().unwrap(), msg.as_ptr());
                 unreachable!()
             }
-            GAME_SHUTDOWN => {
+            Some(Exports::GAME_SHUTDOWN) => {
                 // Just return a dummy value here for clean shutdown
                 0
             }

@@ -10,6 +10,10 @@
 extern crate lazy_static;
 extern crate libc;
 
+#[macro_use]
+extern crate enum_primitive_derive;
+extern crate num_traits;
+
 // https://github.com/rust-lang/rust/issues/29638#issuecomment-298517765
 pub use lazy_static::*;
 
