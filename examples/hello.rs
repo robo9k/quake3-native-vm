@@ -17,11 +17,15 @@ impl Module for HelloQuake3 {
     }
 
     fn init(&self, level_time: ffi::c_int, random_seed: ffi::c_int, restart: bool) {
+        println!("init: level_time={}, random_seed={}, restart={}", level_time, random_seed, restart);
+
         self.syscalls.error("Hello, World!");
         unreachable!()
     }
 
-    fn shutdown(&self, restart: bool) {}
+    fn shutdown(&self, restart: bool) {
+        println!("shutdown: restart={}", restart);
+    }
 }
 
 game_module!(HelloQuake3);
