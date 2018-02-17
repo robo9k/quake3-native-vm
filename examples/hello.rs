@@ -5,7 +5,7 @@
 extern crate quake3_native_vm;
 
 use std::ffi::CString;
-use quake3_native_vm::libc;
+use quake3_native_vm::ffi;
 
 struct HelloQuake3 {
     syscall: Syscall,
@@ -14,9 +14,9 @@ struct HelloQuake3 {
 use quake3_native_vm::*;
 
 /// See [ioquake3's `game/g_public.h`](https://github.com/ioquake/ioq3/blob/master/code/game/g_public.h)
-const G_ERROR: libc::intptr_t = 1;
-const GAME_INIT: libc::c_int = 0;
-const GAME_SHUTDOWN: libc::c_int = 1;
+const G_ERROR: ffi::intptr_t = 1;
+const GAME_INIT: ffi::c_int = 0;
+const GAME_SHUTDOWN: ffi::c_int = 1;
 
 impl NativeVM for HelloQuake3 {
     fn dll_entry(syscall: Syscall) -> Box<HelloQuake3> {
@@ -25,20 +25,20 @@ impl NativeVM for HelloQuake3 {
 
     fn vm_main(
         &self,
-        command: libc::c_int,
-        _arg0: libc::c_int,
-        _arg1: libc::c_int,
-        _arg2: libc::c_int,
-        _arg3: libc::c_int,
-        _arg4: libc::c_int,
-        _arg5: libc::c_int,
-        _arg6: libc::c_int,
-        _arg7: libc::c_int,
-        _arg8: libc::c_int,
-        _arg9: libc::c_int,
-        _arg10: libc::c_int,
-        _arg11: libc::c_int,
-    ) -> libc::intptr_t {
+        command: ffi::c_int,
+        _arg0: ffi::c_int,
+        _arg1: ffi::c_int,
+        _arg2: ffi::c_int,
+        _arg3: ffi::c_int,
+        _arg4: ffi::c_int,
+        _arg5: ffi::c_int,
+        _arg6: ffi::c_int,
+        _arg7: ffi::c_int,
+        _arg8: ffi::c_int,
+        _arg9: ffi::c_int,
+        _arg10: ffi::c_int,
+        _arg11: ffi::c_int,
+    ) -> ffi::intptr_t {
         match command {
             GAME_INIT => {
                 let msg = CString::new("Hello, World!").unwrap();
