@@ -11,5 +11,3 @@ crate-type = ["cdylib"]
 [dependencies]
 libc = "0.2.70"
 lazy_static = "1.4.0"
-enum-primitive-derive = "0.1.2"
-num-traits = "0.2.11"
