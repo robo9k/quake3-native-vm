@@ -136,6 +136,6 @@ macro_rules! game_module {
             }
         }
 
-        native_vm!(ModuleWrapper);
+        $crate::native_vm!(ModuleWrapper);
     };
 }

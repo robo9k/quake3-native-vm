@@ -1,8 +1,5 @@
-#[macro_use]
-extern crate quake3_native_vm;
-
-use quake3_native_vm::ffi;
 use quake3_native_vm::qagame::{Module, Syscalls};
+use quake3_native_vm::{ffi, game_module};
 
 struct HelloQuake3 {
     syscalls: Syscalls,

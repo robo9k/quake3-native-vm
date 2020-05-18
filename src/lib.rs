@@ -79,9 +79,6 @@ pub trait NativeVM: 'static + Sync + Send {
 /// Then implement a module by using the macro as such:
 ///
 /// ```rust
-/// #[macro_use]
-/// extern crate quake3_native_vm;
-///
 /// use std::ffi::CString;
 /// use quake3_native_vm::*;
 ///
