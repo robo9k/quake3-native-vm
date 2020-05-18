@@ -7,6 +7,8 @@
 //! This crate enables you to write such a native module with Rust code.
 //! Take a look at [`native_vm!`](native_vm) to get started.
 
+#![doc(html_root_url = "https://docs.rs/quake3_native_vm/0.1.0")]
+
 pub mod ffi {
     pub use libc::c_int;
     pub use libc::intptr_t;
