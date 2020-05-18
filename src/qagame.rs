@@ -89,6 +89,7 @@ pub trait Module: 'static + Sync + Send {
     fn shutdown(&self, restart: bool);
 }
 
+/// Create a [NativeVM](::NativeVM) impl for the id Quake 3 `qagame` module
 #[macro_export]
 macro_rules! game_module {
     ($ty:ident) => {
