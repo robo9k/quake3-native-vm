@@ -7,12 +7,10 @@
 //! This crate enables you to write such a native module with Rust code.
 //! Take a look at [`native_vm!`](native_vm) to get started.
 
-extern crate lazy_static;
-extern crate libc;
 
 #[macro_use]
 extern crate enum_primitive_derive;
-pub extern crate num_traits;
+pub use num_traits;
 
 // https://github.com/rust-lang/rust/issues/29638#issuecomment-298517765
 pub use lazy_static::*;

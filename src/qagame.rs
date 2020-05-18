@@ -11,7 +11,7 @@
 //! i.e. players do not have to download it.
 
 use std::ffi::CString;
-use {ffi, Syscall};
+use crate::{ffi, Syscall};
 use num_traits::ToPrimitive;
 
 /// System traps provided by the engine
