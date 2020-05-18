@@ -10,9 +10,8 @@
 //! Unlike the other modules, it does not have to be present on the game client,
 //! i.e. players do not have to download it.
 
-use std::ffi::CString;
 use crate::{ffi, Syscall};
-use num_traits::ToPrimitive;
+use std::ffi::CString;
 
 /// System traps provided by the engine
 ///
@@ -20,10 +19,18 @@ use num_traits::ToPrimitive;
 #[repr(C)]
 // TODO: Should these be shortened and renamed, e.g. `Print` and `Error` instead of `G_PRINT` and `G_ERROR`?
 #[allow(non_camel_case_types)]
-#[derive(Primitive)]
 pub enum Imports {
     G_PRINT = 0,
     G_ERROR = 1,
+}
+
+impl From<Imports> for isize {
+    fn from(import: Imports) -> Self {
+        match import {
+            Imports::G_PRINT => 0,
+            Imports::G_ERROR => 1,
+        }
+    }
 }
 
 /// Functions exported by the module
@@ -32,10 +39,21 @@ pub enum Imports {
 #[repr(C)]
 // TODO: Should these be shortened and renamed, e.g. `Init` and `Shutdown` instead of `GAME_INIT` and `GAME_SHUTDOWN`?
 #[allow(non_camel_case_types)]
-#[derive(Primitive)]
 pub enum Exports {
     GAME_INIT = 0,
     GAME_SHUTDOWN = 1,
+}
+
+impl std::convert::TryFrom<ffi::c_int> for Exports {
+    type Error = &'static str;
+
+    fn try_from(cmd: ffi::c_int) -> Result<Self, Self::Error> {
+        match cmd {
+            0 => Ok(Exports::GAME_INIT),
+            1 => Ok(Exports::GAME_SHUTDOWN),
+            _ => Err("Unknown command"),
+        }
+    }
 }
 
 /// `qagame` specific wrapper around generic [`Syscall`](Syscall)
@@ -54,7 +72,7 @@ impl Syscalls {
     /// See `trap_Error` in [ioquake3's `game/g_syscalls.c`](https://github.com/ioquake/ioq3/blob/master/code/game/g_syscalls.c).
     pub fn error<T: Into<Vec<u8>>>(&self, text: T) {
         let msg = CString::new(text).unwrap();
-        (self.syscall)(Imports::G_ERROR.to_isize().unwrap(), msg.as_ptr());
+        (self.syscall)(Imports::G_ERROR.into(), msg.as_ptr());
     }
 }
 
@@ -102,22 +120,22 @@ macro_rules! game_module {
                 _arg10: $crate::ffi::c_int,
                 _arg11: $crate::ffi::c_int,
             ) -> $crate::ffi::intptr_t {
-                use $crate::num_traits::FromPrimitive;
+                use std::convert::TryFrom;
 
-                match $crate::qagame::Exports::from_i32(command) {
-                    Some($crate::qagame::Exports::GAME_INIT) => {
+                match $crate::qagame::Exports::try_from(command) {
+                    Ok($crate::qagame::Exports::GAME_INIT) => {
                         self.module.init(arg0, arg1, arg2 != 0);
                         0
                     }
-                    Some($crate::qagame::Exports::GAME_SHUTDOWN) => {
+                    Ok($crate::qagame::Exports::GAME_SHUTDOWN) => {
                         self.module.shutdown(arg0 != 0);
                         0
                     }
-                    _ => panic!("Game command not implemented"),
+                    Err(_) => panic!("Game command not implemented"),
                 }
             }
         }
 
         native_vm!(ModuleWrapper);
-    }
+    };
 }

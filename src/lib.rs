@@ -7,17 +7,9 @@
 //! This crate enables you to write such a native module with Rust code.
 //! Take a look at [`native_vm!`](native_vm) to get started.
 
-
-#[macro_use]
-extern crate enum_primitive_derive;
-pub use num_traits;
-
-// https://github.com/rust-lang/rust/issues/29638#issuecomment-298517765
-pub use lazy_static::*;
-
 pub mod ffi {
-    pub use libc::intptr_t;
     pub use libc::c_int;
+    pub use libc::intptr_t;
 }
 
 pub mod qagame;
@@ -161,7 +153,7 @@ macro_rules! native_vm {
     ($ty:ident) => {
         use std::sync::{Arc, RwLock};
 
-        $crate::lazy_static! {
+        lazy_static::lazy_static! {
             static ref _VM_IMPL: Arc<RwLock<Option<Box<$crate::NativeVM>>>> = Arc::new(RwLock::new(None));
         }
 
