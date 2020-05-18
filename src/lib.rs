@@ -79,9 +79,6 @@ pub trait NativeVM: 'static + Sync + Send {
 /// Then implement a module by using the macro as such:
 ///
 /// ```rust
-/// // Needed for re-exported lazy_static! macro
-/// #![feature(use_extern_macros)]
-///
 /// #[macro_use]
 /// extern crate quake3_native_vm;
 ///
@@ -153,9 +150,8 @@ macro_rules! native_vm {
     ($ty:ident) => {
         use std::sync::{Arc, RwLock};
 
-        lazy_static::lazy_static! {
-            static ref _VM_IMPL: Arc<RwLock<Option<Box<$crate::NativeVM>>>> = Arc::new(RwLock::new(None));
-        }
+        static _VM_IMPL: once_cell::sync::Lazy<Arc<RwLock<Option<Box<$crate::NativeVM>>>>> =
+            once_cell::sync::Lazy::new(|| Arc::new(RwLock::new(None)));
 
         #[doc(hidden)]
         #[no_mangle]
@@ -168,34 +164,25 @@ macro_rules! native_vm {
         #[doc(hidden)]
         #[no_mangle]
         #[allow(non_snake_case)]
-        pub extern "C" fn vmMain(command: $crate::ffi::c_int,
-                                 arg0: $crate::ffi::c_int,
-                                 arg1: $crate::ffi::c_int,
-                                 arg2: $crate::ffi::c_int,
-                                 arg3: $crate::ffi::c_int,
-                                 arg4: $crate::ffi::c_int,
-                                 arg5: $crate::ffi::c_int,
-                                 arg6: $crate::ffi::c_int,
-                                 arg7: $crate::ffi::c_int,
-                                 arg8: $crate::ffi::c_int,
-                                 arg9: $crate::ffi::c_int,
-                                 arg10: $crate::ffi::c_int,
-                                 arg11: $crate::ffi::c_int)
-                                 -> $crate::ffi::intptr_t {
+        pub extern "C" fn vmMain(
+            command: $crate::ffi::c_int,
+            arg0: $crate::ffi::c_int,
+            arg1: $crate::ffi::c_int,
+            arg2: $crate::ffi::c_int,
+            arg3: $crate::ffi::c_int,
+            arg4: $crate::ffi::c_int,
+            arg5: $crate::ffi::c_int,
+            arg6: $crate::ffi::c_int,
+            arg7: $crate::ffi::c_int,
+            arg8: $crate::ffi::c_int,
+            arg9: $crate::ffi::c_int,
+            arg10: $crate::ffi::c_int,
+            arg11: $crate::ffi::c_int,
+        ) -> $crate::ffi::intptr_t {
             let data = _VM_IMPL.read().unwrap();
-            data.as_ref().unwrap().vm_main(command,
-                               arg0,
-                               arg1,
-                               arg2,
-                               arg3,
-                               arg4,
-                               arg5,
-                               arg6,
-                               arg7,
-                               arg8,
-                               arg9,
-                               arg10,
-                               arg11)
+            data.as_ref().unwrap().vm_main(
+                command, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11,
+            )
         }
-    }
+    };
 }
