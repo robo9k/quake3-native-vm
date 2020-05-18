@@ -20,7 +20,9 @@ use std::ffi::CString;
 // TODO: Should these be shortened and renamed, e.g. `Print` and `Error` instead of `G_PRINT` and `G_ERROR`?
 #[allow(non_camel_case_types)]
 pub enum Imports {
+    /// Print a message to qconsole
     G_PRINT = 0,
+    /// Shutdown the game with an error message
     G_ERROR = 1,
 }
 
@@ -40,7 +42,9 @@ impl From<Imports> for isize {
 // TODO: Should these be shortened and renamed, e.g. `Init` and `Shutdown` instead of `GAME_INIT` and `GAME_SHUTDOWN`?
 #[allow(non_camel_case_types)]
 pub enum Exports {
+    /// Initialize module upon loading a level
     GAME_INIT = 0,
+    /// Shutdown module upon loading another level, mod etc.
     GAME_SHUTDOWN = 1,
 }
 
@@ -78,6 +82,7 @@ impl Syscalls {
 
 /// See `vmMain` in [ioquake3's `game/g_main.c`](https://github.com/ioquake/ioq3/blob/master/code/game/g_main.c).
 pub trait Module: 'static + Sync + Send {
+    /// See `dllEntry` in [ioquake3's `game/g_syscalls.`](https://github.com/ioquake/ioq3/blob/master/code/game/g_syscalls.c)
     fn dll_entry(syscalls: Syscalls) -> Box<Self>
     where
         Self: Sized;
