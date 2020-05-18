@@ -53,8 +53,8 @@ impl std::convert::TryFrom<ffi::c_int> for Exports {
 
     fn try_from(cmd: ffi::c_int) -> Result<Self, Self::Error> {
         match cmd {
-            0 => Ok(Exports::GAME_INIT),
-            1 => Ok(Exports::GAME_SHUTDOWN),
+            0 => Ok(Self::GAME_INIT),
+            1 => Ok(Self::GAME_SHUTDOWN),
             _ => Err("Unknown command"),
         }
     }
@@ -69,8 +69,8 @@ pub struct Syscalls {
 
 impl Syscalls {
     /// See `dllEntry` in [ioquake3's `game/g_syscalls.c`](https://github.com/ioquake/ioq3/blob/master/code/game/g_syscalls.c).
-    pub fn new(syscall: Syscall) -> Syscalls {
-        Syscalls { syscall }
+    pub fn new(syscall: Syscall) -> Self {
+        Self { syscall }
     }
 
     /// See `trap_Error` in [ioquake3's `game/g_syscalls.c`](https://github.com/ioquake/ioq3/blob/master/code/game/g_syscalls.c).

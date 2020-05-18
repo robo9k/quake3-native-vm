@@ -47,6 +47,8 @@ pub trait NativeVM: 'static + Sync + Send {
     ///
     /// See `VM_Call` in [ioquake3's `qcommon/vm.c`](https://github.com/ioquake/ioq3/blob/master/code/qcommon/vm.c).
     /// See `vm_s.entryPoint` in [ioquake3's `qcommon/vm_local.h`](https://github.com/ioquake/ioq3/blob/master/code/qcommon/vm_local.h).
+    // Function signature is part of external signature and can't be changed
+    #[allow(clippy::too_many_arguments)]
     fn vm_main(
         &self,
         command: ffi::c_int,
