@@ -9,6 +9,10 @@
 
 #![doc(html_root_url = "https://docs.rs/quake3_native_vm/0.1.0")]
 
+#![forbid(unsafe_code)]
+//#![deny(missing_docs, unused_imports)]
+
+/// Foreign function interface
 pub mod ffi {
     pub use libc::c_int;
     pub use libc::intptr_t;
