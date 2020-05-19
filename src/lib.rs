@@ -67,6 +67,36 @@ pub trait NativeVM: 'static + Sync + Send {
     ) -> ffi::intptr_t;
 }
 
+/// Module initialization function
+///
+/// Exported as `dllEntry` with [`native_vm!`](native_vm)
+pub type DllEntry = extern "C" fn(syscall: Syscall);
+
+/// Name of the exported [`DllEntry`](DllEntry) function
+pub const DLLENTRY_EXPORT_NAME: &[u8] = b"dllEntry\0";
+
+/// Module exports dispatcher function
+///
+/// Exported as `vmMain` with [`native_vm!`](native_vm)
+pub type VmMain = extern "C" fn(
+    command: ffi::c_int,
+    arg0: ffi::c_int,
+    arg1: ffi::c_int,
+    arg2: ffi::c_int,
+    arg3: ffi::c_int,
+    arg4: ffi::c_int,
+    arg5: ffi::c_int,
+    arg6: ffi::c_int,
+    arg7: ffi::c_int,
+    arg8: ffi::c_int,
+    arg9: ffi::c_int,
+    arg10: ffi::c_int,
+    arg11: ffi::c_int,
+) -> ffi::intptr_t;
+
+/// Name of the exported [`VmMain`](VmMain) function
+pub const VMMAIN_EXPORT_NAME: &[u8] = b"vmMain\0";
+
 /// Create required `extern "C" fn`s to load a [`impl NativeVM`](NativeVM) as shared library
 ///
 /// Can only be used once per Rust lib. Each module (`qagame` etc.) needs its own shared library.
