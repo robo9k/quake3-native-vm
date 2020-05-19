@@ -1,10 +1,25 @@
+#[macro_use]
+extern crate rental;
+
 use libloading as lib;
 use quake3_native_vm::{
     ffi, native_vm, DllEntry, NativeVM, Syscall, VmMain, DLLENTRY_EXPORT_NAME, VMMAIN_EXPORT_NAME,
 };
 
 struct ProxyModule {
-    proxy_lib: lib::Library,
+    proxy_vm_main: rent_libloading::RentSymbol<VmMain>,
+}
+
+rental! {
+    mod rent_libloading {
+        use libloading;
+
+        #[rental(deref_suffix)]
+        pub(crate) struct RentSymbol<S: 'static> {
+            lib: Box<libloading::Library>,
+            sym: libloading::Symbol<'lib, S>,
+        }
+    }
 }
 
 impl NativeVM for ProxyModule {
@@ -16,7 +31,12 @@ impl NativeVM for ProxyModule {
         println!("dllEntry: {:?}", dll_entry);
         dll_entry(syscall);
 
-        Box::new(Self { proxy_lib: lib })
+        match rent_libloading::RentSymbol::try_new(Box::new(lib), |lib| unsafe {
+            lib.get(VMMAIN_EXPORT_NAME)
+        }) {
+            Ok(proxy_vm_main) => return Box::new(Self { proxy_vm_main }),
+            Err(e) => panic!("couldn't rent vmMain Symbol: {}", e.0),
+        }
     }
 
     fn vm_main(
@@ -35,10 +55,7 @@ impl NativeVM for ProxyModule {
         arg10: ffi::c_int,
         arg11: ffi::c_int,
     ) -> ffi::intptr_t {
-        let vm_main: lib::Symbol<VmMain> =
-            unsafe { self.proxy_lib.get(VMMAIN_EXPORT_NAME).unwrap() };
-        println!("vmMain: {:?}", vm_main);
-        vm_main(
+        (self.proxy_vm_main)(
             command, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11,
         )
     }
