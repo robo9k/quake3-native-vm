@@ -111,6 +111,38 @@ pub trait Module: 'static + Sync + Send {
 
     /// See `G_ShutdownGame` in [ioquake3's `game/g_main.c`](https://github.com/ioquake/ioq3/blob/master/code/game/g_main.c).
     fn shutdown(&self, restart: bool);
+
+    /// See `ClientConnect` in [ioquake3's `game/g_client.c`](https://github.com/ioquake/ioq3/blob/master/code/game/g_client.c).
+    fn client_connect(
+        &self,
+        client_number: ffi::c_int,
+        first_time: bool,
+        is_bot: bool,
+    ) -> ffi::intptr_t;
+
+    /// See `ClientThink` in [ioquake3's `game/g_active.c`](https://github.com/ioquake/ioq3/blob/master/code/game/g_active.c).
+    fn client_think(&self, client_number: ffi::c_int);
+
+    /// See `ClientUserinfoChanged` in [ioquake3's `game/g_client.c`](https://github.com/ioquake/ioq3/blob/master/code/game/g_client.c).
+    fn client_userinfo_changed(&self, client_number: ffi::c_int);
+
+    /// See `ClientDisconnect` in [ioquake3's `game/g_client.c`](https://github.com/ioquake/ioq3/blob/master/code/game/g_client.c).
+    fn client_disconnect(&self, client_number: ffi::c_int);
+
+    /// See `ClientBegin` in [ioquake3's `game/g_client.c`](https://github.com/ioquake/ioq3/blob/master/code/game/g_client.c).
+    fn client_begin(&self, client_number: ffi::c_int);
+
+    /// See `ClientCommand` in [ioquake3's `game/g_cmds.c`](https://github.com/ioquake/ioq3/blob/master/code/game/g_cmds.c).
+    fn client_command(&self, client_number: ffi::c_int);
+
+    /// See `G_RunFrame` in [ioquake3's `game/g_main.c`](https://github.com/ioquake/ioq3/blob/master/code/game/g_main.c).
+    fn run_frame(&self, level_time: ffi::c_int);
+
+    /// See `ConsoleCommand` in [ioquake3's `game/g_svcmds.c`](https://github.com/ioquake/ioq3/blob/master/code/game/g_svcmds.c).
+    fn console_command(&self) -> bool;
+
+    /// See `BotAIStartFrame` in [ioquake3's `game/ai_main.c`](https://github.com/ioquake/ioq3/blob/master/code/game/ai_main.c).
+    fn botai_start_frame(&self, level_time: ffi::c_int) -> bool;
 }
 
 /// Create a [NativeVM](::NativeVM) impl for the id Quake 3 `qagame` module
@@ -155,6 +187,47 @@ macro_rules! game_module {
                     Ok($crate::qagame::Exports::GAME_SHUTDOWN) => {
                         self.module.shutdown(arg0 != 0);
                         0
+                    }
+                    Ok($crate::qagame::Exports::GAME_CLIENT_CONNECT) => {
+                        self.module.client_connect(arg0, arg1 != 0, arg2 != 0)
+                    }
+                    Ok($crate::qagame::Exports::GAME_CLIENT_THINK) => {
+                        self.module.client_think(arg0);
+                        0
+                    }
+                    Ok($crate::qagame::Exports::GAME_CLIENT_USERINFO_CHANGED) => {
+                        self.module.client_userinfo_changed(arg0);
+                        0
+                    }
+                    Ok($crate::qagame::Exports::GAME_CLIENT_DISCONNECT) => {
+                        self.module.client_disconnect(arg0);
+                        0
+                    }
+                    Ok($crate::qagame::Exports::GAME_CLIENT_BEGIN) => {
+                        self.module.client_begin(arg0);
+                        0
+                    }
+                    Ok($crate::qagame::Exports::GAME_CLIENT_COMMAND) => {
+                        self.module.client_command(arg0);
+                        0
+                    }
+                    Ok($crate::qagame::Exports::GAME_RUN_FRAME) => {
+                        self.module.run_frame(arg0);
+                        0
+                    }
+                    Ok($crate::qagame::Exports::GAME_CONSOLE_COMMAND) => {
+                        if self.module.console_command() {
+                            1
+                        } else {
+                            0
+                        }
+                    }
+                    Ok($crate::qagame::Exports::BOTAI_START_FRAME) => {
+                        if self.module.botai_start_frame(arg0) {
+                            1
+                        } else {
+                            0
+                        }
                     }
                     Ok(command) => todo!("Game command {:?} not implemented", command),
 
