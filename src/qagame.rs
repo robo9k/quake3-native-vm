@@ -39,6 +39,7 @@ impl From<Imports> for isize {
 ///
 /// See `gameExport_t` in [ioquake3's `game/g_public.h`](https://github.com/ioquake/ioq3/blob/master/code/game/g_public.h).
 #[repr(C)]
+#[derive(Debug)]
 // TODO: Should these be shortened and renamed, e.g. `Init` and `Shutdown` instead of `GAME_INIT` and `GAME_SHUTDOWN`?
 #[allow(non_camel_case_types)]
 pub enum Exports {
@@ -46,6 +47,24 @@ pub enum Exports {
     GAME_INIT = 0,
     /// Shutdown module upon loading another level, mod etc.
     GAME_SHUTDOWN = 1,
+    /// Connect or reject a client
+    GAME_CLIENT_CONNECT = 2,
+    /// Client finished connecting
+    GAME_CLIENT_BEGIN = 3,
+    /// Userinfo data for client changed
+    GAME_CLIENT_USERINFO_CHANGED = 4,
+    /// Disconnect a client
+    GAME_CLIENT_DISCONNECT = 5,
+    /// Client text command
+    GAME_CLIENT_COMMAND = 6,
+    /// Run client frame
+    GAME_CLIENT_THINK = 7,
+    /// Run server frame
+    GAME_RUN_FRAME = 8,
+    /// Server console text command
+    GAME_CONSOLE_COMMAND = 9,
+    /// Run bot frame
+    BOTAI_START_FRAME = 10,
 }
 
 impl std::convert::TryFrom<ffi::c_int> for Exports {
@@ -137,7 +156,9 @@ macro_rules! game_module {
                         self.module.shutdown(arg0 != 0);
                         0
                     }
-                    Err(_) => panic!("Game command not implemented"),
+                    Ok(command) => todo!("Game command {:?} not implemented", command),
+
+                    Err(command) => panic!("Unknown game command {:?}", command),
                 }
             }
         }
