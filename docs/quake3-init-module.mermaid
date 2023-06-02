@@ -1,0 +1,13 @@
+sequenceDiagram
+    box ioq3ded.x86_64
+        participant q3 as Quake 3
+    end
+    box qagamex86_64.so
+        participant m as game_module!
+        participant s as GameModule
+    end
+
+    q3->>q3: VM_Create('qagame', SV_GameSystemCalls, 'vm_game')
+    q3->>q3: Sys_LoadGameDll()
+    q3->>m: dllEntry(syscallptr)
+    m->>s: dll_entry(syscalls)
