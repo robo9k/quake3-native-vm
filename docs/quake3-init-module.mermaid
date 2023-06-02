@@ -1,13 +1,12 @@
-sequenceDiagram
-    box ioq3ded.x86_64
-        participant q3 as Quake 3
+flowchart TB
+    subgraph ioq3ded.x86_64
+        VM_Create -- "'qagame', SV_GameSystemCalls, …" --> Sys_LoadGameDll
     end
-    box qagamex86_64.so
-        participant m as game_module!
-        participant s as GameModule
+    subgraph qagamex86_64.so
+        subgraph game_module!
+            Sys_LoadGameDll -- Syscall --> dllEntry
+        end
+        subgraph GameModule
+            dllEntry -- Syscalls --> dll_entry
+        end
     end
-
-    q3->>q3: VM_Create('qagame', SV_GameSystemCalls, 'vm_game')
-    q3->>q3: Sys_LoadGameDll()
-    q3->>m: dllEntry(syscallptr)
-    m->>s: dll_entry(syscalls)

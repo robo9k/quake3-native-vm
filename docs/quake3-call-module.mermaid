@@ -1,14 +1,13 @@
-sequenceDiagram
-    box ioq3ded.x86_64
-        participant q3 as Quake 3
+flowchart TB
+    subgraph ioq3ded.x86_64
+        SV_InitGameVM -- restart --> VM_Call
     end
-    box qagamex86_64.so
-        participant m as game_module!
-        participant s as GameModule
+    subgraph qagamex86_64.so
+        subgraph game_module!
+            VM_Call -- "GAME_INIT, …, restart" --> vmMain
+            vmMain -- "GAME_INIT, …, restart" --> vm_main
+        end
+        subgraph GameModule
+            vm_main -- "…, restart" --> init
+        end
     end
-
-    q3->>q3: SV_InitGameVM(restart)
-    q3->>q3: VM_Call(GAME_INIT, time, restart, ...)
-    q3->>m: vmMain(GAME_INIT, ...)
-    m->>m: vm_main(GAME_INIT, ...)
-    m->>s: init(time, ...)

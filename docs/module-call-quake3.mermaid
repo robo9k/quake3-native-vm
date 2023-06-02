@@ -1,15 +1,15 @@
-sequenceDiagram
-    box ioq3ded.x86_64
-        participant q3 as Quake 3
+flowchart TB
+    subgraph qagamex86_64.so
+        subgraph GameModule
+            init
+        end
+        subgraph Syscalls
+            init -- "msg" --> error
+            error -- "G_ERROR, msg" --> syscall
+        end
     end
-    box qagamex86_64.so
-        participant m as Syscalls
-        participant s as GameModule
+    subgraph ioq3ded.x86_64
+        syscall -- "G_ERROR, msg" --> VM_DllSyscall
+        VM_DllSyscall -- "G_ERROR, msg" --> SV_GameSystemCalls
+        SV_GameSystemCalls -- "msg" --> Com_Error
     end
-
-    s->>s: init(...)
-    s->>m: error(...)
-    m->>m: syscall(G_ERROR, ...)
-    m->>q3: VM_DllSyscall(G_ERROR, ...)
-    q3->>q3: SV_GameSystemCalls(G_ERROR, ...)
-    q3->>q3: Com_Error(...)
