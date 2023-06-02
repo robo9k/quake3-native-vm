@@ -1,0 +1,15 @@
+flowchart TB
+    subgraph qagamex86_64.so
+        subgraph GameModule
+            init
+        end
+        subgraph Syscalls
+            init -- "msg" --> error
+            error -- "G_ERROR, msg" --> syscall
+        end
+    end
+    subgraph ioq3ded.x86_64
+        syscall -- "G_ERROR, msg" --> VM_DllSyscall
+        VM_DllSyscall -- "G_ERROR, msg" --> SV_GameSystemCalls
+        SV_GameSystemCalls -- "msg" --> Com_Error
+    end

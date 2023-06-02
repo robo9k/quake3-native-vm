@@ -1,0 +1,12 @@
+flowchart TB
+    subgraph ioq3ded.x86_64
+        VM_Create -- "'qagame', SV_GameSystemCalls, …" --> Sys_LoadGameDll
+    end
+    subgraph qagamex86_64.so
+        subgraph game_module!
+            Sys_LoadGameDll -- Syscall --> dllEntry
+        end
+        subgraph GameModule
+            dllEntry -- Syscalls --> dll_entry
+        end
+    end

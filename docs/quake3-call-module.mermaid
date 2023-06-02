@@ -1,0 +1,13 @@
+flowchart TB
+    subgraph ioq3ded.x86_64
+        SV_InitGameVM -- restart --> VM_Call
+    end
+    subgraph qagamex86_64.so
+        subgraph game_module!
+            VM_Call -- "GAME_INIT, …, restart" --> vmMain
+            vmMain -- "GAME_INIT, …, restart" --> vm_main
+        end
+        subgraph GameModule
+            vm_main -- "…, restart" --> init
+        end
+    end
