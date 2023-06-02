@@ -1,0 +1,35 @@
+permissions:
+    contents: read
+    pages: write
+    id-token: write
+
+on:
+    push:
+        branches:
+            - main
+    workflow_dispatch:
+
+concurrency:
+    group: "pages"
+    cancel-in-progress: false
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
+            - run: rustup update nightly && rustup default nightly
+            - run: rustup run nightly cargo doc --no-deps --all-features
+            - uses: actions/configure-pages@7110e9e03ffb4a421945e5d0607007b8e9f1f52b # v3.0.5
+            - uses: actions/upload-pages-artifact@64bcae551a7b18bcb9a09042ddf1960979799187 # v1-0-8
+              with:
+                path: 'target/doc/'
+
+    deploy:
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
+        runs-on: ubuntu-latest
+        needs: build
+        steps:
+            - uses: actions/deploy-pages@73e62e651178eeba977de2dc9f4c7645b3d01015 # v2.0.0
