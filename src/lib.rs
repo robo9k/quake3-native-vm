@@ -184,7 +184,7 @@ macro_rules! native_vm {
     ($ty:ident) => {
         use std::sync::{Arc, RwLock};
 
-        static _VM_IMPL: once_cell::sync::Lazy<Arc<RwLock<Option<Box<$crate::NativeVM>>>>> =
+        static _VM_IMPL: once_cell::sync::Lazy<Arc<RwLock<Option<Box<dyn $crate::NativeVM>>>>> =
             once_cell::sync::Lazy::new(|| Arc::new(RwLock::new(None)));
 
         #[doc(hidden)]
