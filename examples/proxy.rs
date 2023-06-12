@@ -24,7 +24,7 @@ rental! {
 
 impl NativeVM for ProxyModule {
     fn dll_entry(syscall: Syscall) -> Box<Self> {
-        let lib = lib::Library::new("target/debug/examples/hello").unwrap();
+        let lib = unsafe { lib::Library::new("target/debug/examples/hello").unwrap() };
         println!("qagame: {:?}", lib);
 
         let dll_entry: lib::Symbol<DllEntry> = unsafe { lib.get(DLLENTRY_EXPORT_NAME).unwrap() };
