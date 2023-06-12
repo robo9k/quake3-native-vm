@@ -2,7 +2,7 @@
 name = "quake3-native-vm"
 version = "0.1.0"
 authors = ["robo9k <robo@9k.lv>"]
-edition = "2018"
+edition = "2021"
 
 [[example]]
 name = "hello"

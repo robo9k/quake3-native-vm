@@ -150,7 +150,7 @@ pub trait Module: 'static + Sync + Send {
 macro_rules! game_module {
     ($ty:ident) => {
         struct ModuleWrapper {
-            module: Box<$crate::qagame::Module>,
+            module: Box<dyn $crate::qagame::Module>,
         }
 
         use $crate::NativeVM;
